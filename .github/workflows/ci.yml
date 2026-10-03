@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Checks on ${{ matrix.os }} (Node 24)
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm audit --audit-level=moderate
+      - run: npm pack --dry-run
+
+  integration:
+    name: Lumine integration with Tombi 1.7.1
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      LUMINE_JASMINE_REPORTER: list
+      TOMBI_VERSION: 1.7.1
+      TOMBI_SHA256: 1611a2d7e16b11a8abf71c25f079eebeae845649bee795aa3828f142515fc070
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: ide-toml
+      - uses: actions/checkout@v7
+        with:
+          repository: lumine-code/lumine
+          path: lumine
+      - uses: actions/checkout@v7
+        with:
+          repository: lumine-code/ide-client
+          path: ide-client
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: lumine/.nvmrc
+          cache: npm
+          cache-dependency-path: lumine/package-lock.json
+      - name: Install build and display dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libx11-dev libxkbfile-dev libsecret-1-dev
+      - name: Use HTTPS for public GitHub dependencies
+        run: git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+      - name: Install the verified native Tombi release
+        working-directory: ide-toml
+        run: |
+          asset="tombi-cli-${TOMBI_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+          curl -fsSLO "https://github.com/tombi-toml/tombi/releases/download/v${TOMBI_VERSION}/${asset}"
+          echo "${TOMBI_SHA256}  ${asset}" | sha256sum --check -
+          mkdir .server
+          tar -xzf "${asset}" -C .server
+          server_path=$(find "$PWD/.server" -type f -name tombi -print -quit)
+          test -n "$server_path"
+          chmod +x "$server_path"
+          echo "TOMBI_PATH=$server_path" >> "$GITHUB_ENV"
+      - name: Install package dependencies
+        working-directory: ide-toml
+        run: npm ci --ignore-scripts
+      - name: Install the language-server client
+        working-directory: ide-client
+        run: npm ci --ignore-scripts
+      - name: Make the integration dependencies available to the test home
+        run: |
+          mkdir -p "$RUNNER_TEMP/ide-toml-home/packages"
+          ln -s "$GITHUB_WORKSPACE/ide-client" "$RUNNER_TEMP/ide-toml-home/packages/ide-client"
+          ln -s "$GITHUB_WORKSPACE/lumine/node_modules/language-toml" "$RUNNER_TEMP/ide-toml-home/packages/language-toml"
+          echo "LUMINE_HOME=$RUNNER_TEMP/ide-toml-home" >> "$GITHUB_ENV"
+          echo "LUMINE_TEST_PACKAGES=ide-client language-toml" >> "$GITHUB_ENV"
+      - name: Install editor dependencies
+        working-directory: lumine
+        run: npm ci --ignore-scripts
+      - name: Download Electron
+        working-directory: lumine
+        run: node ./node_modules/electron/install.js
+      - name: Build the editor
+        working-directory: lumine
+        run: npm run build
+      - name: Run the Jasmine suite
+        working-directory: lumine
+        timeout-minutes: 20
+        run: xvfb-run --auto-servernum npm start -- --test ../ide-toml/spec
