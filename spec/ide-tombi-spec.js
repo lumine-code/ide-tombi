@@ -16,10 +16,10 @@ const register = (main, service = {}) => {
   return { adapter, registration, disposable };
 };
 
-describe("ide-toml adapter", () => {
+describe("ide-tombi adapter", () => {
   let main, adapter, disposable;
   beforeEach(async () => {
-    const pkg = await lumine.packages.activatePackage("ide-toml");
+    const pkg = await lumine.packages.activatePackage("ide-tombi");
     main = pkg.mainModule;
     ({ adapter, disposable } = register(main));
   });
@@ -32,17 +32,17 @@ describe("ide-toml adapter", () => {
       "formatterLineWidth",
       "schemaAssociations",
     ])
-      lumine.config.unset(`ide-toml.${key}`);
-    await lumine.packages.deactivatePackage("ide-toml");
+      lumine.config.unset(`ide-tombi.${key}`);
+    await lumine.packages.deactivatePackage("ide-tombi");
   });
 
   it("registers TOML with the shared client and root-scoped sessions", () => {
-    expect(adapter.id).toBe("ide-toml");
+    expect(adapter.id).toBe("ide-tombi");
     expect(adapter.grammarScopes).toEqual(["source.toml"]);
     expect(adapter.languageId).toBe("toml");
     expect(adapter.sessionScope).toBe("project-root");
-    expect(adapter.settingsKeyPaths).toEqual(["ide-toml"]);
-    expect(adapter.restartKeyPaths).toEqual(["ide-toml.serverPath", "ide-toml.offline"]);
+    expect(adapter.settingsKeyPaths).toEqual(["ide-tombi"]);
+    expect(adapter.restartKeyPaths).toEqual(["ide-tombi.serverPath", "ide-tombi.offline"]);
     expect(adapter.installServer).toEqual(jasmine.any(Function));
     expect(adapter.latestServerVersion).toEqual(jasmine.any(Function));
     expect(adapter.managedServer).toBeUndefined();
@@ -64,10 +64,10 @@ describe("ide-toml adapter", () => {
 
   it("sends native kebab-case fallback options without client-only settings", () => {
     const schemas = [{ path: "https://example.com/app.json", include: ["app.toml"] }];
-    lumine.config.set("ide-toml.tomlVersion", "v1.1.0");
-    lumine.config.set("ide-toml.formatterLineWidth", 120);
-    lumine.config.set("ide-toml.schemaAssociations", schemas);
-    lumine.config.set("ide-toml.offline", true);
+    lumine.config.set("ide-tombi.tomlVersion", "v1.1.0");
+    lumine.config.set("ide-tombi.formatterLineWidth", 120);
+    lumine.config.set("ide-tombi.schemaAssociations", schemas);
+    lumine.config.set("ide-tombi.offline", true);
     expect(adapter.getSettings()).toEqual({
       tombi: { "toml-version": "v1.1.0", format: { rules: { "line-width": 120 } }, schemas },
     });
@@ -75,8 +75,8 @@ describe("ide-toml adapter", () => {
   });
 
   it("launches the configured executable with the project cwd and native stdio", async () => {
-    lumine.config.set("ide-toml.serverPath", process.execPath);
-    lumine.config.set("ide-toml.offline", true);
+    lumine.config.set("ide-tombi.serverPath", process.execPath);
+    lumine.config.set("ide-tombi.offline", true);
     expect(await adapter.resolveServer({ rootPath: __dirname })).toEqual({
       command: process.execPath,
       args: ["lsp", "--offline"],
@@ -87,7 +87,7 @@ describe("ide-toml adapter", () => {
 
   it("normalizes native absolute schema paths without rewriting remote URLs", () => {
     const absolute = path.join(__dirname, "schema with spaces.json");
-    lumine.config.set("ide-toml.schemaAssociations", [
+    lumine.config.set("ide-tombi.schemaAssociations", [
       { path: absolute, include: ["app.toml"] },
       { path: "https://example.com/schema.json", include: ["app.toml"] },
     ]);
@@ -99,7 +99,7 @@ describe("ide-toml adapter", () => {
 
   it("warns once and drops paths the editor configuration cannot resolve", () => {
     spyOn(lumine.notifications, "addWarning");
-    lumine.config.set("ide-toml.schemaAssociations", [
+    lumine.config.set("ide-tombi.schemaAssociations", [
       { path: "relative-only/spec-schema.json", include: ["app.toml"] },
     ]);
     expect(adapter.getSettings()).toEqual({ tombi: {} });
@@ -117,13 +117,13 @@ describe("ide-toml adapter", () => {
     const edge = register(main, { reportMissingServer });
     expect(await edge.adapter.resolveServer({ rootPath: __dirname })).toBeNull();
     expect(reportMissingServer).toHaveBeenCalledTimes(1);
-    expect(reportMissingServer.calls.mostRecent().args[0]).toBe("ide-toml");
+    expect(reportMissingServer.calls.mostRecent().args[0]).toBe("ide-tombi");
     expect(reportMissingServer.calls.mostRecent().args[1].description).toContain("Tombi");
     edge.disposable.dispose();
   });
 
   it("rejects a bad explicit path instead of silently using another server", async () => {
-    lumine.config.set("ide-toml.serverPath", path.join(__dirname, "missing-tombi"));
+    lumine.config.set("ide-tombi.serverPath", path.join(__dirname, "missing-tombi"));
     await expectAsync(
       adapter.resolveServer({
         rootPath: __dirname,
@@ -134,7 +134,7 @@ describe("ide-toml adapter", () => {
 
   it("offers one accurate background tip", () => {
     const tips = main.provideBackgroundTips();
-    expect(tips.packageName).toBe("ide-toml");
+    expect(tips.packageName).toBe("ide-tombi");
     expect(tips.tips).toHaveSize(1);
     expect(tips.tips[0]).toContain("#:schema");
   });
@@ -143,15 +143,15 @@ describe("ide-toml adapter", () => {
     const first = main;
     disposable.dispose();
     disposable = null;
-    await lumine.packages.deactivatePackage("ide-toml");
-    await lumine.packages.unloadPackage("ide-toml");
-    await lumine.packages.loadPackage("ide-toml");
-    const pkg = await lumine.packages.activatePackage("ide-toml");
+    await lumine.packages.deactivatePackage("ide-tombi");
+    await lumine.packages.unloadPackage("ide-tombi");
+    await lumine.packages.loadPackage("ide-tombi");
+    const pkg = await lumine.packages.activatePackage("ide-tombi");
     main = pkg.mainModule;
     expect(main).not.toBe(first);
     ({ adapter, disposable } = register(main));
-    expect(adapter.id).toBe("ide-toml");
-    expect(main.provideBackgroundTips().packageName).toBe("ide-toml");
+    expect(adapter.id).toBe("ide-tombi");
+    expect(main.provideBackgroundTips().packageName).toBe("ide-tombi");
   });
 
   it("exposes only supported feature switches", () => {
@@ -170,20 +170,22 @@ describe("ide-toml adapter", () => {
     ]);
     for (const [name, definition] of Object.entries(configSchema.features.properties)) {
       expect(definition.default).toBe(true);
-      expect(lumine.config.get(`ide-toml.features.${name}`)).toBe(true);
+      expect(lumine.config.get(`ide-tombi.features.${name}`)).toBe(true);
     }
   });
 });
 
-describe("ide-toml server resolution and installation", () => {
+describe("ide-tombi server resolution and installation", () => {
   let server, directory;
   beforeEach(async () => {
-    await lumine.packages.activatePackage("ide-toml");
+    await lumine.packages.activatePackage("ide-tombi");
     server = require("../lib/server");
-    directory = fs.mkdtempSync(path.join(fs.realpathSync.native(os.tmpdir()), "ide-toml-install-"));
+    directory = fs.mkdtempSync(
+      path.join(fs.realpathSync.native(os.tmpdir()), "ide-tombi-install-"),
+    );
   });
   afterEach(async () => {
-    await lumine.packages.deactivatePackage("ide-toml");
+    await lumine.packages.deactivatePackage("ide-tombi");
     await fs.promises.rm(directory, {
       recursive: true,
       force: true,

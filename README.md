@@ -1,4 +1,4 @@
-# ide-toml
+# ide-tombi
 
 Provide TOML language intelligence through Tombi.
 
@@ -16,7 +16,7 @@ Uses the native [Tombi language server](https://tombi-toml.github.io/tombi/) wit
 
 ## Installation
 
-To install `ide-toml` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-toml`.
+To install `ide-tombi` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-tombi`.
 
 Install `ide-client` and `language-toml`. The language server starts when a TOML editor opens. Use IDE Client's Manage Servers action to install Tombi, install it separately on PATH, or select an executable in this package's settings.
 

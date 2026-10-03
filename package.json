@@ -1,13 +1,13 @@
 {
-  "name": "ide-toml",
+  "name": "ide-tombi",
   "author": "lumine-code",
   "description": "Provide TOML language intelligence through Tombi.",
-  "repository": "https://github.com/lumine-code/ide-toml",
+  "repository": "https://github.com/lumine-code/ide-tombi",
   "bugs": {
-    "url": "https://github.com/lumine-code/ide-toml/issues"
+    "url": "https://github.com/lumine-code/ide-tombi/issues"
   },
   "keywords": [
-    "tombi",
+    "toml",
     "language-server",
     "lsp",
     "schema",

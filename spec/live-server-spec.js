@@ -9,7 +9,7 @@ const { writeFixture, applyEdits } = require("./helpers/fixture");
 const serverPath = process.env.TOMBI_PATH || require("../lib/server").findOnPath("tombi");
 const liveSuite = serverPath ? describe : () => {};
 
-liveSuite("ide-toml official Tombi server", () => {
+liveSuite("ide-tombi official Tombi server", () => {
   let client, disposable, rootPath, fixture, adapter;
   let originalTimeout;
   beforeAll(() => {
@@ -21,16 +21,16 @@ liveSuite("ide-toml official Tombi server", () => {
   });
   beforeEach(async () => {
     jasmine.useRealClock();
-    const pkg = await lumine.packages.activatePackage("ide-toml");
-    lumine.config.set("ide-toml.serverPath", serverPath);
-    lumine.config.set("ide-toml.offline", true);
+    const pkg = await lumine.packages.activatePackage("ide-tombi");
+    lumine.config.set("ide-tombi.serverPath", serverPath);
+    lumine.config.set("ide-tombi.offline", true);
     disposable = pkg.mainModule.consumeIdeClient({
       registerAdapter(value) {
         adapter = value;
         return { dispose() {} };
       },
     });
-    rootPath = fs.mkdtempSync(path.join(fs.realpathSync.native(os.tmpdir()), "ide-toml-live-"));
+    rootPath = fs.mkdtempSync(path.join(fs.realpathSync.native(os.tmpdir()), "ide-tombi-live-"));
     fixture = writeFixture(rootPath);
     client = new LiveLspClient(adapter, rootPath);
   });
@@ -44,8 +44,8 @@ liveSuite("ide-toml official Tombi server", () => {
       "formatterLineWidth",
       "schemaAssociations",
     ])
-      lumine.config.unset(`ide-toml.${key}`);
-    await lumine.packages.deactivatePackage("ide-toml");
+      lumine.config.unset(`ide-tombi.${key}`);
+    await lumine.packages.deactivatePackage("ide-tombi");
     await fs.promises.rm(rootPath, {
       recursive: true,
       force: true,
@@ -145,7 +145,7 @@ liveSuite("ide-toml official Tombi server", () => {
       path.join(rootPath, "tombi.toml"),
       '\n[format.rules]\nstring-quote-style = "single"\n',
     );
-    lumine.config.set("ide-toml.tomlVersion", "v1.1.0");
+    lumine.config.set("ide-tombi.tomlVersion", "v1.1.0");
     const source = 'theme="dark"\n';
     const uri = await open(source);
     const status = await client.request("tombi/getStatus", { uri });
@@ -159,7 +159,7 @@ liveSuite("ide-toml official Tombi server", () => {
 
   it("uses editor schema associations when no project configuration exists", async () => {
     fs.unlinkSync(path.join(rootPath, "tombi.toml"));
-    lumine.config.set("ide-toml.schemaAssociations", [
+    lumine.config.set("ide-tombi.schemaAssociations", [
       { path: fixture.schemaPath, include: ["**/fixture.toml"] },
     ]);
     const uri = await open('theme = "invalid"\n');
