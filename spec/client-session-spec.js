@@ -5,6 +5,17 @@ const { writeFixture } = require("./helpers/fixture");
 
 const serverPath = process.env.TOMBI_PATH || require("../lib/server").findOnPath("tombi");
 const liveSuite = serverPath ? describe : () => {};
+const waitForSession = async (service, editor) => {
+  const deadline = Date.now() + 15000;
+  while (Date.now() < deadline) {
+    const session = (await service.activeSessionsForEditor(editor)).find(
+      ({ adapter }) => adapter.id === "ide-toml",
+    );
+    if (session) return session;
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error(`Tombi session did not start: ${JSON.stringify(service.getLog("ide-toml"))}`);
+};
 
 liveSuite("ide-toml through the real ide-client session", () => {
   let rootPath, editor, clientMain, service, originalProjects, originalTimeout;
@@ -31,6 +42,8 @@ liveSuite("ide-toml through the real ide-client session", () => {
     await lumine.packages.activatePackage("ide-toml");
     editor = await lumine.workspace.open(fixture.filePath);
     await editor.whenGrammarSettled();
+    expect(service.adaptersForEditor(editor).map(({ id }) => id)).toContain("ide-toml");
+    await waitForSession(service, editor);
   });
   afterEach(async () => {
     editor?.destroy();
