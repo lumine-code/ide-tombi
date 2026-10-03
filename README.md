@@ -39,6 +39,8 @@ A document can also name its schema directly:
 enabled = true
 ```
 
+Fallback schema associations in the package settings accept absolute local paths or schema URLs. Use `tombi.toml` for portable paths relative to the project.
+
 Offline mode disables remote schema and package lookups while preserving local schemas. Tombi does not currently implement symbol rename, signature help or code lens, so this adapter offers no switches for them.
 
 ## Services

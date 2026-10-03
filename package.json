@@ -91,7 +91,7 @@
     },
     "schemaAssociations": {
       "title": "Fallback Schema Associations",
-      "description": "JSON schemas for documents without a project Tombi configuration. Paths resolve from the project root; include values are file glob patterns.",
+      "description": "JSON schemas for documents without a project Tombi configuration. Use absolute schema paths or URLs; include values are file glob patterns.",
       "type": "array",
       "items": {
         "title": "Schema Association",
@@ -100,7 +100,7 @@
         "properties": {
           "path": {
             "title": "Schema Path",
-            "description": "A JSON schema URL or file path relative to the project root.",
+            "description": "A JSON schema URL or absolute local file path. Use tombi.toml for paths relative to the project.",
             "type": "string",
             "default": ""
           },
