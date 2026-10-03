@@ -1,0 +1,199 @@
+{
+  "name": "ide-toml",
+  "author": "lumine-code",
+  "description": "Provide TOML language intelligence through Tombi.",
+  "repository": "https://github.com/lumine-code/ide-toml",
+  "bugs": {
+    "url": "https://github.com/lumine-code/ide-toml/issues"
+  },
+  "keywords": [
+    "tombi",
+    "language-server",
+    "lsp",
+    "schema",
+    "configuration"
+  ],
+  "version": "1.0.0",
+  "license": "MIT",
+  "engines": {
+    "lumine": "^1.0.0"
+  },
+  "main": "./lib/main",
+  "files": [
+    "lib",
+    "spec"
+  ],
+  "scripts": {
+    "test": "lumine --test spec",
+    "lint": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "providedServices": {
+    "background-tips.provider": {
+      "versions": {
+        "1.0.0": "provideBackgroundTips"
+      }
+    }
+  },
+  "consumedServices": {
+    "ide-client": {
+      "versions": {
+        "^1.0.0": "consumeIdeClient"
+      }
+    }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-n": "^18.4.1",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.9",
+    "vscode-jsonrpc": "^9.0.3"
+  },
+  "configSchema": {
+    "serverPath": {
+      "title": "Server Path",
+      "description": "Absolute path to a native tombi executable. Leave empty to use the editor's managed copy, then PATH.",
+      "type": "string",
+      "default": ""
+    },
+    "notifyWhenMissing": {
+      "title": "Notify When Missing",
+      "description": "Show the language-server installation notification when Tombi cannot be found.",
+      "type": "boolean",
+      "default": true
+    },
+    "offline": {
+      "title": "Offline Mode",
+      "description": "Disable remote schema and package lookups. Local schemas remain available. Changing this restarts Tombi.",
+      "type": "boolean",
+      "default": false
+    },
+    "tomlVersion": {
+      "title": "Fallback TOML Version",
+      "description": "TOML version when a document has no project configuration, schema or version directive. Default leaves the choice to Tombi.",
+      "type": "string",
+      "enum": [
+        "default",
+        "v1.0.0",
+        "v1.1.0"
+      ],
+      "default": "default"
+    },
+    "formatterLineWidth": {
+      "title": "Fallback Formatter Line Width",
+      "description": "Preferred line width for documents without a project Tombi configuration. Zero leaves the choice to Tombi.",
+      "type": "integer",
+      "minimum": 0,
+      "default": 0
+    },
+    "schemaAssociations": {
+      "title": "Fallback Schema Associations",
+      "description": "JSON schemas for documents without a project Tombi configuration. Paths resolve from the project root; include values are file glob patterns.",
+      "type": "array",
+      "items": {
+        "title": "Schema Association",
+        "description": "Associate a JSON schema with matching TOML files.",
+        "type": "object",
+        "properties": {
+          "path": {
+            "title": "Schema Path",
+            "description": "A JSON schema URL or file path relative to the project root.",
+            "type": "string",
+            "default": ""
+          },
+          "include": {
+            "title": "Include",
+            "description": "File glob patterns served by this schema.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": []
+          }
+        }
+      },
+      "default": []
+    },
+    "features": {
+      "title": "Features",
+      "description": "Which Tombi capabilities the editor uses. Disable one to hand it to another provider for the same document.",
+      "type": "object",
+      "scopeResolution": "grammar",
+      "properties": {
+        "diagnostics": {
+          "title": "Diagnostics",
+          "description": "Report TOML syntax, lint and schema validation problems.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "autocomplete": {
+          "title": "Autocomplete",
+          "description": "Complete schema keys, values and package metadata.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "hover": {
+          "title": "Hover",
+          "description": "Show descriptions, expected types and dependency details.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "definition": {
+          "title": "Go To Definition",
+          "description": "Follow schema types and supported package or path definitions.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "references": {
+          "title": "Find References",
+          "description": "Find references in supported Cargo and Python project manifests.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "symbols": {
+          "title": "Symbols",
+          "description": "Expose document keys and tables to navigation and outline views.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "format": {
+          "title": "Format",
+          "description": "Format TOML using the project's Tombi rules.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "codeActions": {
+          "title": "Code Actions",
+          "description": "Offer Tombi corrections and package manifest actions.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "inlayHints": {
+          "title": "Inlay Hints",
+          "description": "Annotate supported dependency versions and inherited Cargo values.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        },
+        "semanticTokens": {
+          "title": "Semantic Tokens",
+          "description": "Layer Tombi's semantic highlighting over the TOML grammar.",
+          "type": "boolean",
+          "scopeResolution": "grammar",
+          "default": true
+        }
+      }
+    }
+  }
+}
