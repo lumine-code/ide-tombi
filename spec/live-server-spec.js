@@ -25,7 +25,7 @@ liveSuite("ide-tombi official Tombi server", () => {
     const pkg = await lumine.packages.activatePackage("ide-tombi");
     lumine.config.set("ide-tombi.serverPath", serverPath);
     lumine.config.set("ide-tombi.offline", true);
-    disposable = pkg.mainModule.consumeIdeClient({
+    disposable = pkg.mainModule.consumeIde({
       registerAdapter(value) {
         adapter = value;
         return { dispose() {} };

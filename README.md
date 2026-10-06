@@ -2,7 +2,7 @@
 
 Provide TOML language intelligence through Tombi.
 
-Uses the native [Tombi language server](https://tombi-toml.github.io/tombi/) with the shared ide-client infrastructure and the language-toml grammar.
+Uses the native [Tombi language server](https://tombi-toml.github.io/tombi/) with the shared ide infrastructure and the language-toml grammar.
 
 ## Features
 
@@ -18,7 +18,7 @@ Uses the native [Tombi language server](https://tombi-toml.github.io/tombi/) wit
 
 To install `ide-tombi` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-tombi`.
 
-Install `ide-client` and `language-toml`. The language server starts when a TOML editor opens. Use IDE Client's Manage Servers action to install Tombi, install it separately on PATH, or select an executable in this package's settings.
+Install `ide` and `language-toml`. The language server starts when a TOML editor opens. Use IDE's Manage Servers action to install Tombi, install it separately on PATH, or select an executable in this package's settings.
 
 ## Configuration
 
@@ -45,7 +45,7 @@ Offline mode disables remote schema and package lookups while preserving local s
 
 ## Services
 
-- `ide-client`: consumed to register the Tombi language-server adapter.
+- `ide`: consumed to register the Tombi language-server adapter.
 - `background-tips.provider`: provided to explain schema-aware TOML editing.
 
 ## Contributing

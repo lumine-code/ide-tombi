@@ -18,7 +18,7 @@ const waitForSession = async (service, editor) => {
   throw new Error(`Tombi session did not start: ${JSON.stringify(service.getLog("ide-tombi"))}`);
 };
 
-liveSuite("ide-tombi through the real ide-client session", () => {
+liveSuite("ide-tombi through the real ide session", () => {
   let rootPath, editor, clientMain, service, originalProjects, originalTimeout;
   beforeAll(() => {
     originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -37,9 +37,9 @@ liveSuite("ide-tombi through the real ide-client session", () => {
     lumine.config.set("ide-tombi.serverPath", serverPath);
     lumine.config.set("ide-tombi.offline", true);
     await lumine.packages.activatePackage("language-toml");
-    const clientPackage = await lumine.packages.activatePackage("ide-client");
+    const clientPackage = await lumine.packages.activatePackage("ide");
     clientMain = clientPackage.mainModule;
-    service = clientMain.provideIdeClient();
+    service = clientMain.provideIde();
     await lumine.packages.activatePackage("ide-tombi");
     editor = await lumine.workspace.open(fixture.filePath);
     await editor.whenGrammarSettled();
@@ -49,7 +49,7 @@ liveSuite("ide-tombi through the real ide-client session", () => {
   afterEach(async () => {
     editor?.destroy();
     await lumine.packages.deactivatePackage("ide-tombi");
-    await lumine.packages.deactivatePackage("ide-client");
+    await lumine.packages.deactivatePackage("ide");
     await lumine.packages.deactivatePackage("language-toml");
     lumine.config.unset("ide-tombi.serverPath");
     lumine.config.unset("ide-tombi.offline");

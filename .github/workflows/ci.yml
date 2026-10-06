@@ -52,8 +52,8 @@ jobs:
           path: lumine
       - uses: actions/checkout@v7
         with:
-          repository: lumine-code/ide-client
-          path: ide-client
+          repository: lumine-code/ide
+          path: ide
       - uses: actions/setup-node@v7
         with:
           node-version-file: lumine/.nvmrc
@@ -81,15 +81,15 @@ jobs:
         working-directory: ide-tombi
         run: npm ci --ignore-scripts
       - name: Install the language-server client
-        working-directory: ide-client
+        working-directory: ide
         run: npm ci --ignore-scripts
       - name: Make the integration dependencies available to the test home
         run: |
           mkdir -p "$RUNNER_TEMP/ide-tombi-home/packages"
-          ln -s "$GITHUB_WORKSPACE/ide-client" "$RUNNER_TEMP/ide-tombi-home/packages/ide-client"
+          ln -s "$GITHUB_WORKSPACE/ide" "$RUNNER_TEMP/ide-tombi-home/packages/ide"
           ln -s "$GITHUB_WORKSPACE/lumine/node_modules/language-toml" "$RUNNER_TEMP/ide-tombi-home/packages/language-toml"
           echo "LUMINE_HOME=$RUNNER_TEMP/ide-tombi-home" >> "$GITHUB_ENV"
-          echo "LUMINE_TEST_PACKAGES=ide-client language-toml" >> "$GITHUB_ENV"
+          echo "LUMINE_TEST_PACKAGES=ide language-toml" >> "$GITHUB_ENV"
       - name: Install declared spec packages
         run: node lumine/script/install-spec-packages.js --package ide-tombi --home "$RUNNER_TEMP/lumine-spec-home" --github-env "$GITHUB_ENV"
       - name: Install editor dependencies

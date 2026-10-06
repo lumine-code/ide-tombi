@@ -7,7 +7,7 @@ const { pathToFileURL } = require("url");
 const register = (main, service = {}) => {
   let adapter;
   const registration = { dispose: jasmine.createSpy("dispose adapter edge") };
-  const disposable = main.consumeIdeClient({
+  const disposable = main.consumeIde({
     registerAdapter(value) {
       adapter = value;
       return registration;
