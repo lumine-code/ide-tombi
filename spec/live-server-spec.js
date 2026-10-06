@@ -6,7 +6,8 @@ const { writeFixture, applyEdits } = require("./helpers/fixture");
 
 // CI installs the official native release and supplies TOMBI_PATH. A fleet run
 // without Tombi still exercises the adapter and verified installer contracts.
-const serverPath = process.env.TOMBI_PATH || require("../lib/server").findOnPath("tombi");
+const serverPath =
+  process.env.TOMBI_PATH || require("./helpers/server-resolver").findOnPath("tombi");
 const liveSuite = serverPath ? describe : () => {};
 
 liveSuite("ide-tombi official Tombi server", () => {

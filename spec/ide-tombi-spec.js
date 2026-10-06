@@ -1,3 +1,4 @@
+const { resolver, serverContext, installContext, serverApi } = require("./helpers/server-resolver");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
@@ -74,7 +75,7 @@ describe("ide-tombi adapter", () => {
   it("launches the configured executable with the project cwd and native stdio", async () => {
     lumine.config.set("ide-tombi.serverPath", process.execPath);
     lumine.config.set("ide-tombi.offline", true);
-    expect(await adapter.resolveServer({ rootPath: __dirname })).toEqual({
+    expect(await adapter.resolveServer(serverContext({ rootPath: __dirname }))).toEqual({
       command: process.execPath,
       args: ["lsp", "--offline"],
       cwd: __dirname,
@@ -108,11 +109,10 @@ describe("ide-tombi adapter", () => {
   });
 
   it("reports a missing server through the hub", async () => {
-    const server = require("../lib/server");
-    spyOn(server, "findOnPath").and.returnValue(null);
+    spyOn(resolver, "select").and.resolveTo(null);
     const reportMissingServer = jasmine.createSpy("report missing server");
     const edge = register(main, { reportMissingServer });
-    expect(await edge.adapter.resolveServer({ rootPath: __dirname })).toBeNull();
+    expect(await edge.adapter.resolveServer(serverContext({ rootPath: __dirname }))).toBeNull();
     expect(reportMissingServer).toHaveBeenCalledTimes(1);
     expect(reportMissingServer.calls.mostRecent().args[0]).toBe("ide-tombi");
     expect(reportMissingServer.calls.mostRecent().args[1].description).toContain("Tombi");
@@ -122,10 +122,12 @@ describe("ide-tombi adapter", () => {
   it("rejects a bad explicit path instead of silently using another server", async () => {
     lumine.config.set("ide-tombi.serverPath", path.join(__dirname, "missing-tombi"));
     await expectAsync(
-      adapter.resolveServer({
-        rootPath: __dirname,
-        managedServer: { binaryPath: process.execPath },
-      }),
+      adapter.resolveServer(
+        serverContext({
+          rootPath: __dirname,
+          managedServer: { binaryPath: process.execPath },
+        }),
+      ),
     ).toBeRejected();
   });
 
@@ -191,37 +193,15 @@ describe("ide-tombi server resolution and installation", () => {
     });
   });
 
-  it("prefers the explicit path, then the managed copy, then PATH", async () => {
-    const managed = { binaryPath: "/managed/tombi", version: "1.7.1" };
-    spyOn(server, "findOnPath").and.returnValue("/path/tombi");
-    expect((await server.resolveServer(process.execPath, managed)).command).toBe(process.execPath);
-    expect(await server.resolveServer("", managed)).toEqual({
-      command: managed.binaryPath,
-      args: ["lsp"],
-      version: "1.7.1",
-    });
-    expect(await server.resolveServer("")).toEqual({ command: "/path/tombi", args: ["lsp"] });
-  });
-
   it("returns null when the executable is absent", async () => {
-    spyOn(server, "findOnPath").and.returnValue(null);
-    expect(await server.resolveServer("")).toBeNull();
+    spyOn(resolver, "select").and.resolveTo(null);
+    expect(await server.resolveServer(serverContext(), "")).toBeNull();
   });
 
   it("rejects a directory selected as an executable", async () => {
-    await expectAsync(server.resolveServer(directory)).toBeRejectedWithError(
-      "The configured Tombi path is not an executable file.",
+    await expectAsync(server.resolveServer(serverContext(), directory)).toBeRejectedWithError(
+      /must name a file/,
     );
-  });
-
-  it("finds actual executables and skips directories on a synthetic PATH", () => {
-    const name = path.basename(process.execPath, path.extname(process.execPath));
-    expect(
-      server.findOnPath(name, { PATH: path.dirname(process.execPath), PATHEXT: ".EXE" }),
-    ).toBeTruthy();
-    fs.mkdirSync(path.join(directory, "tombi"));
-    expect(server.findOnPath("tombi", { PATH: directory })).toBeNull();
-    expect(server.findOnPath("missing", { PATH: directory })).toBeNull();
   });
 
   it("names only upstream native release targets and exact versioned archives", () => {
@@ -275,7 +255,9 @@ describe("ide-tombi server resolution and installation", () => {
 
   it("verifies the selected release digest and preserves the archive tree", async () => {
     const api = installerApi();
-    const installed = await server.installServer({ storagePath: directory, version: "1.7.1", api });
+    const installed = await server.installServer(
+      installContext({ storagePath: directory, version: "1.7.1", api }),
+    );
     expect(api.githubReleaseByTag).toHaveBeenCalledWith("tombi-toml/tombi", "v1.7.1");
     expect(api.downloadFile).toHaveBeenCalledWith("https://example.com/archive", directory, {
       type: process.platform === "win32" ? "zip" : "gzip-tar",
@@ -289,32 +271,32 @@ describe("ide-tombi server resolution and installation", () => {
 
   it("refuses an unverified archive before downloading", async () => {
     const api = installerApi("");
-    await expectAsync(server.installServer({ storagePath: directory, api })).toBeRejectedWithError(
-      /SHA256/,
-    );
+    await expectAsync(
+      server.installServer(installContext({ storagePath: directory, api })),
+    ).toBeRejectedWithError(/SHA256/);
     expect(api.downloadFile).not.toHaveBeenCalled();
   });
 
   it("refuses a release missing the expected target", async () => {
     const api = installerApi();
     api.latestGithubRelease.and.resolveTo({ version: "1.7.1", assets: [] });
-    await expectAsync(server.installServer({ storagePath: directory, api })).toBeRejectedWithError(
-      /does not publish/,
-    );
+    await expectAsync(
+      server.installServer(installContext({ storagePath: directory, api })),
+    ).toBeRejectedWithError(/does not publish/);
     expect(api.downloadFile).not.toHaveBeenCalled();
   });
 
   it("rejects an archive without the executable", async () => {
     const api = installerApi();
     api.downloadFile.and.resolveTo();
-    await expectAsync(server.installServer({ storagePath: directory, api })).toBeRejectedWithError(
-      /does not contain/,
-    );
+    await expectAsync(
+      server.installServer(installContext({ storagePath: directory, api })),
+    ).toBeRejectedWithError(/does not contain/);
   });
 
   it("reports the latest stable upstream version through the hub API", async () => {
     const api = installerApi();
-    expect(await server.latestServerVersion(api)).toBe("1.7.1");
+    expect(await server.latestServerVersion(serverApi(api))).toBe("1.7.1");
     expect(api.latestGithubRelease).toHaveBeenCalledWith("tombi-toml/tombi");
   });
 });

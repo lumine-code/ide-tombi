@@ -3,7 +3,8 @@ const os = require("os");
 const path = require("path");
 const { writeFixture } = require("./helpers/fixture");
 
-const serverPath = process.env.TOMBI_PATH || require("../lib/server").findOnPath("tombi");
+const serverPath =
+  process.env.TOMBI_PATH || require("./helpers/server-resolver").findOnPath("tombi");
 const liveSuite = serverPath ? describe : () => {};
 const waitForSession = async (service, editor) => {
   const deadline = Date.now() + 15000;
