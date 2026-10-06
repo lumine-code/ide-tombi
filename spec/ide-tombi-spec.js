@@ -57,9 +57,7 @@ describe("ide-tombi adapter", () => {
 
   it("leaves native defaults and project settings with Tombi", () => {
     expect(adapter.getSettings()).toEqual({ tombi: {} });
-    expect(adapter.getWorkspaceConfiguration("tombi")).toEqual({});
-    expect(adapter.getWorkspaceConfiguration()).toEqual({ tombi: {} });
-    expect(adapter.getWorkspaceConfiguration("unknown")).toBeUndefined();
+    expect(adapter.getWorkspaceConfiguration).toBeUndefined();
   });
 
   it("sends native kebab-case fallback options without client-only settings", () => {
@@ -71,7 +69,6 @@ describe("ide-tombi adapter", () => {
     expect(adapter.getSettings()).toEqual({
       tombi: { "toml-version": "v1.1.0", format: { rules: { "line-width": 120 } }, schemas },
     });
-    expect(adapter.getWorkspaceConfiguration("tombi")).toEqual(adapter.getSettings().tombi);
   });
 
   it("launches the configured executable with the project cwd and native stdio", async () => {
