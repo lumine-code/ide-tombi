@@ -1,0 +1,16 @@
+{
+  "title": "ide-tombi",
+  "description": "Tombi identifies a duplicate key in a TOML configuration.",
+  "recordedOn": "2026-10-13",
+  "sourceRevision": "db70ebc2b7596114587a093c163a5990c4f758f3",
+  "mode": "normal",
+  "fontSettings": "default",
+  "images": [
+    {
+      "file": "demo.png",
+      "label": "Tombi identifies a duplicate key in a TOML configuration.",
+      "width": 1100,
+      "height": 490
+    }
+  ]
+}

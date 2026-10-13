@@ -14,6 +14,8 @@ Uses the native [Tombi language server](https://tombi-toml.github.io/tombi/) wit
 - **Highlighting**: supply semantic tokens and dependency inlay hints when available.
 - **Managed server**: install native Tombi releases after verifying their SHA256 digest.
 
+![Tombi identifies a duplicate key in a TOML configuration.](.github/demo.png)
+
 ## Installation
 
 To install `ide-tombi` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/ide-tombi`.
