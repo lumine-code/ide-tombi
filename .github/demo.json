@@ -1,16 +1,96 @@
 {
   "title": "ide-tombi",
   "description": "Tombi identifies a duplicate key in a TOML configuration.",
-  "recordedOn": "2026-10-13",
-  "sourceRevision": "db70ebc2b7596114587a093c163a5990c4f758f3",
+  "recordedOn": "2026-10-14",
+  "sourceRevision": "bea64db1e76f45eae5b0e22b8f6abe630b968300",
+  "themeSourceRevision": "14a69683b0e3238e2bc128fbfae3866c1e4ee9c6",
   "mode": "normal",
   "fontSettings": "default",
+  "scenario": "demo.js",
+  "recipeHash": "58a8ac8c78748aa96ebda7e4e4d9cb2df4f8a7bf957908e235d1bd0910512e7c",
+  "environment": {
+    "platform": "win32",
+    "arch": "x64",
+    "electron": "44.7.0",
+    "chrome": "152.0.7977.130",
+    "devicePixelRatio": 1,
+    "locale": "en-GB",
+    "fontFamily": "Fira Code, Menlo, DejaVu Sans Mono, Consolas, monospace",
+    "fontSize": 14,
+    "themes": ["one-day-syntax", "one-day-ui"]
+  },
+  "viewport": { "width": 1100, "height": 490 },
+  "cornerRadius": 10,
+  "sources": {
+    "editor": {
+      "revision": "8be8f86075ad93df038610d82b3ac6d99329957d",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "package": {
+      "revision": "bea64db1e76f45eae5b0e22b8f6abe630b968300",
+      "dirty": true,
+      "workingTreeHash": "ceff428994e425695c5e3a8a9bb5903685dccd77935055bdb8c12a8966383c88"
+    },
+    "ide-tombi": {
+      "revision": "bea64db1e76f45eae5b0e22b8f6abe630b968300",
+      "dirty": true,
+      "workingTreeHash": "ceff428994e425695c5e3a8a9bb5903685dccd77935055bdb8c12a8966383c88"
+    },
+    "documentation-view": {
+      "revision": "5d0a00d98bf0b1f7a5444f548a4683a07062ada0",
+      "dirty": true,
+      "workingTreeHash": "012fbb9e6b8dc1f192ee363c7fbf3170548e39169ca52d87f81061f968e31fd3"
+    },
+    "hover": {
+      "revision": "6a05977f1748bd17f7559631f423f34c257d162b",
+      "dirty": true,
+      "workingTreeHash": "09e99cf5a334b94b212db69efe6c22849d4058416233745e88706c0b0e8ec02d"
+    },
+    "ide": {
+      "revision": "9c74eaee81caf600e73c5c50e1fbf9d9f894d560",
+      "dirty": true,
+      "workingTreeHash": "d648bd45282065de577eef821a325ad0cd0c4b2ee57852485d537e5d21d192f1"
+    },
+    "language-toml": {
+      "revision": "213cdbb1eaf9329962eef1963f66ed8637f772de",
+      "dirty": false,
+      "workingTreeHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "linter": {
+      "revision": "0965aceb6980bd6c2b706b30874b11bdb6331a5e",
+      "dirty": true,
+      "workingTreeHash": "abd277412c84d07180787e870b71ce2b6b63f9766063ae81a029f7723467f3c3"
+    },
+    "linter-panel": {
+      "revision": "e8fe8ad0f2906a1bc430cd70793d1f82c467682c",
+      "dirty": true,
+      "workingTreeHash": "8f9214c58bdb765df2338b72708ad922514614c418882d9f95107249a87f2eda"
+    },
+    "marker": {
+      "revision": "090aa886a5318fb8a3251cee47c452cf068e08c2",
+      "dirty": true,
+      "workingTreeHash": "d48a91a2025e76cd6da2916c45bbfef07d82dd550cc7f111378e824f86eb144f"
+    },
+    "one-theme": {
+      "revision": "14a69683b0e3238e2bc128fbfae3866c1e4ee9c6",
+      "dirty": true,
+      "workingTreeHash": "50ec2f83a6347dd8113870992ec4eb2be4014f3d9e12213c2f51b543f1eca793"
+    }
+  },
+  "fixtures": [
+    {
+      "file": "ide-tombi/signal.toml",
+      "sha256": "7af43224a21c03e3f14ccbda7746e980ed9dcfebb6ccc011e866b145980eb171"
+    }
+  ],
   "images": [
     {
       "file": "demo.png",
       "label": "Tombi identifies a duplicate key in a TOML configuration.",
       "width": 1100,
-      "height": 490
+      "height": 490,
+      "sha256": "d801bd7a1e446e0770ee7d07444a3c5a468b902fccd2e236d0dc04616aa5a643"
     }
   ]
 }
