@@ -1,0 +1,10 @@
+name = "signal-lab"
+version = 1
+
+[processing]
+window = 3
+normalize = true
+window = 5
+
+[output]
+format = "csv"
