@@ -5,7 +5,7 @@ module.exports = {
     "language-toml",
     "marker",
     "linter",
-    "linter-panel",
+    "diagnostics",
     "documentation-view",
     "hover",
     "ide",
