@@ -35,13 +35,13 @@ jobs:
       - run: npm pack --dry-run
 
   integration:
-    name: Lumine integration with Tombi 1.7.1
+    name: Lumine integration with Tombi 1.9.0
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
       LUMINE_JASMINE_REPORTER: list
-      TOMBI_VERSION: 1.7.1
-      TOMBI_SHA256: 1611a2d7e16b11a8abf71c25f079eebeae845649bee795aa3828f142515fc070
+      TOMBI_VERSION: 1.9.0
+      TOMBI_SHA256: 8d67a6d488be4186ad0a14e0cd0293e4893b9c4c66d41f958d22987749d56ec8
     steps:
       - uses: actions/checkout@v7
         with:

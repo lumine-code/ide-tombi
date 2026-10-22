@@ -68,7 +68,7 @@ liveSuite("ide-tombi through the real ide session", () => {
     const session = await service.activeSessionForFeature(editor, "textDocument/formatting");
     expect(session.adapter.id).toBe("ide-tombi");
     expect(session.state).toBe("running");
-    expect(session.serverInfo.version).toBe(process.env.TOMBI_VERSION || "1.7.1");
+    expect(session.serverInfo.version).toBe(process.env.TOMBI_VERSION || "1.9.0");
     const edits = await clientMain.provideCodeFormatFile().formatEntireFile(editor);
     expect(edits.length).toBeGreaterThan(0);
     editor.transact(() => {
