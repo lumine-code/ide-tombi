@@ -71,7 +71,7 @@ liveSuite("ide-tombi official Tombi server", () => {
     const source = 'theme = "dark"\n"😀żółć" = "wrong"\n';
     const uri = await open(source);
     const report = await diagnostics(uri);
-    const mismatch = report.items.find(({ code }) => code === "type-mismatch");
+    const mismatch = report.items.find(({ code }) => code === "jsonschema/type-mismatch");
     expect(mismatch.message).toContain("Integer");
     expect(mismatch.range).toEqual({
       start: { line: 1, character: 11 },
